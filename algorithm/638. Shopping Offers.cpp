@@ -29,6 +29,80 @@ using namespace std;
 #define umap unordered_map
 #define uset unordered_set
 
+// 3ms
+class Solution
+{
+public:
+    int n, min_cost = INT32_MAX;
+    vector<int> _price;
+    vector<vector<int>> _special;
+
+    int shoppingOffers(vector<int> &price, vector<vector<int>> &special, vector<int> &needs)
+    {
+        if ((n = needs.size()) == 0) return 0;
+        if(is_zeros(needs)) return 0;
+
+        _price = price;
+        _special = special;
+
+        min_cost=0;
+        for (int i = 0; i < n; ++i) min_cost+=price[i]*needs[i];
+
+        dp(needs, 0);
+
+        return min_cost;
+    }
+
+    void dp(vector<int> &needs, int cost)
+    {
+        //PRINT_VECTOR(needs);
+        if (cost >= min_cost || is_zeros(needs))
+        {
+            min_cost = min(min_cost, cost);
+            return;
+        }
+        bool gain = false;
+        for (auto &offer: _special)
+        {
+            //PRINT_1VAR(cn++);
+            if (can_gain(offer, needs))
+            {
+                for (int i = 0; i < n; ++i) needs[i] -= offer[i];
+                gain = true;
+                dp(needs, cost + offer.back());
+                for (int i = 0; i < n; ++i) needs[i] += offer[i];
+            }
+        }
+        // very important!!!
+        if (!gain)
+        {
+            for (int i = 0; i < n; ++i)
+                cost += _price[i] * needs[i];
+            min_cost = min(min_cost, cost);
+        }
+    }
+
+    bool can_gain(vector<int> &offer, vector<int> &needs)
+    {
+//        PRINT_VECTOR(offer);
+//        PRINT_VECTOR(needs);
+        for (int i = 0; i < n; ++i)
+            if (offer[i] > needs[i])
+                return false;
+        return true;
+    }
+
+    bool is_zeros(vector<int> &needs)
+    {
+        for (int i : needs)
+            if (i > 0)
+                return false;
+        return true;
+    }
+};
+
+
+// 800ms
 const int maxNum = 0x3f3f3f3f;
 const int N = 7;
 
