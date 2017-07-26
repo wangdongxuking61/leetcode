@@ -1,43 +1,50 @@
+// Runtime: 1176 ms
 class Solution {
 public:
 	vector<int> smallestRange(vector<vector<int>>& nums)
 	{
 		int n = nums.size() ;
 
+		pair<int,int> a_limit(INT32_MAX, 0);
 		vector<pair<int, int> > vec;
-		vector<int> nums_size(n);
 		for (int i = 0; i < n; i++)
 		{
-			nums_size[i] = nums[i].size();
+			if (a_limit.first > nums[i].back())
+			{
+				a_limit.first = nums[i].back();
+				a_limit.second = i;
+			}
 			for (int j = 0; j < nums[i].size(); j++)
 				vec.push_back(make_pair(nums[i][j], i));
 		}
 		sort(vec.begin(), vec.end());
 
-		int nn = vec.size() , d= INT32_MAX, ret_a, ret_b;
-		for (int i = 0; i < nn; i++)
+		int pos_a = find(vec.begin(), vec.end(), a_limit) - vec.begin();
+		int nn = vec.size() , d = INT32_MAX, ret_a, ret_b ,sum;
+		bool *is_vis = new bool[n];
+		for (int i = 0; i <= pos_a; i++)
 		{
-			vector<int> _nums_size = nums_size;
+			sum = 0;
+			for (int i = 0; i < n; i++)	is_vis[i] = 0;
 
-			int j = nn - 1;
-			for (; j > i; --j)
+			for (int j = i; j < nn; j++)
 			{
-				if (_nums_size[vec[j].second] - 1 <= 0)
+				if (is_vis[vec[j].second])	continue;
+				if (vec[j].first - vec[i].first >= d)	break;
+
+				is_vis[vec[j].second] = true;
+				sum++;
+				if (sum == n)
+				{
+					if (vec[j].first - vec[i].first < d)
+					{
+						d = vec[j].first - vec[i].first;
+						ret_a = vec[i].first;
+						ret_b = vec[j].first;
+					}
 					break;
-				else
-					--_nums_size[vec[j].second];
+				}
 			}
-			if (vec[j].first - vec[i].first < d)
-			{
-				d = vec[j].first - vec[i].first;
-				ret_a = vec[i].first;
-				ret_b = vec[j].first;
-			}
-
-			if (nums_size[vec[i].second] - 1 <= 0)
-				break;
-			else
-				--nums_size[vec[i].second];
 		}
 
 		return { ret_a, ret_b };
