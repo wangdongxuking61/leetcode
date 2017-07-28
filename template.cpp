@@ -57,16 +57,17 @@ struct cmp_less
     { return a < b; }
 };
 template<class T>
-struct cmp_more
+struct cmp_greater
 {
     bool operator()(T &a, T &b)
     { return a > b; }
 };
-p_queue<llong, vector<llong>, cmp_less<llong> > A_max_heap, B_max_heap;//top()是最大
-p_queue<llong, vector<llong>, cmp_more<llong> > A_min_heap, B_min_heap;//top()是最小
+p_queue<int, vector<int>, cmp_less<int> >    max_heap;//top()是最大
+p_queue<int, vector<int>, cmp_greater<int> > min_heap;//top()是最小
 
-// mac debug lldb
-// (int(*)[10])myArray
+// new出来的变量 debug: (int(*)[10])a
+// new出来的变量访问时，下标一定不要越界!!!
+// new出来的一定要delete!!!
 ///////////////////////////////////////////////////////////////////////////////////////
 
 int main()
@@ -74,5 +75,4 @@ int main()
 	return 0;
 }
 
-// new出来的变量访问时，下标一定不要越界!!!
-// new出来的一定要delete!!!
+
